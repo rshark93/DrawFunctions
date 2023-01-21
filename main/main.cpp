@@ -20,20 +20,20 @@ int main(const int argc, char* argv[])
 	//populate coordinate list
 	coord_list coordinate_list = nullptr;
 
-	constexpr auto x_start_value = 0.;
-	constexpr auto x_end_value = 10.;
+	constexpr auto x_start_value = 0.f;
+	constexpr auto x_end_value = 10.f;
 
-	auto max_y = 0.0;
+	auto max_y = 0.f;
 
 	for (auto x = x_start_value; x < x_end_value; x += 0.2) {
-		auto y = pow(10, tan(x)); // 10^tg(x)
-		const auto y_1 = pow(10, sin(x)); // 10^sin(x)
+		auto y = static_cast<float>(pow(10, tan(x))); // 10^tg(x)
+		const auto y_1 = static_cast<float>(pow(10, sin(x))); // 10^sin(x)
 
-		if (y > 60.) y = 60.;
+		if (y > 60.f) y = 60.;
 		if (y > max_y) max_y = y;
 
-		coordinate_list = push_back_coord(coordinate_list, 0, x, y);
-		coordinate_list = push_back_coord(coordinate_list, 1, x, y_1);
+		coordinate_list = push_back_coord(coordinate_list, 0, point_2d{ x, y });
+		coordinate_list = push_back_coord(coordinate_list, 1, point_2d{ x, y_1 });
 	}
 
 	//populate plot parameter object

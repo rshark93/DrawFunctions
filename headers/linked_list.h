@@ -3,8 +3,12 @@
 
 typedef struct caption_item caption_item;
 
-struct caption_item
-{
+struct point_2d {
+	float x;
+	float y;
+};
+
+struct caption_item {
 	char * caption_txt;
 	int    caption_id;
 	int    caption_color;
@@ -15,10 +19,8 @@ typedef caption_item* caption_list;
 
 typedef struct coordinate_item coordinate_item;
 
-struct coordinate_item
-{
-	float  x;
-	float  y;
+struct coordinate_item {
+	point_2d p;
 	int    caption_id;
 	coordinate_item *nxt;
 };
@@ -35,7 +37,7 @@ struct surface_item
 
 typedef surface_item* surface_list;
 
-coord_list push_back_coord(coord_list list,int caption_id, float x,float y);
+coord_list push_back_coord(coord_list list,int caption_id, point_2d p);
 
 void print_list_coord(coord_list list);
 

@@ -2,8 +2,7 @@
 #include <cmath>
 #include <iostream>
 
-int plot_graph(plot_params *params)
-{
+int plot_graph(plot_params *params) {
 	setvbuf(stdout, nullptr, _IONBF, 0);
 
 	surface_list surface_list = nullptr;
@@ -49,8 +48,8 @@ int plot_graph(plot_params *params)
 		params->screen_height,
 		SDL_WINDOW_SHOWN);
 
-	draw_plot(&plot,params,&surface_list);
-	clean_plot(&plot,params,&surface_list);
+	draw_plot(&plot,params, &surface_list);
+	clean_plot(&plot,params, &surface_list);
 
 	return EXIT_SUCCESS;
 }		
@@ -59,14 +58,14 @@ void clean_plot(const plot_struct *plot, plot_params *params, surface_list *surf
 {
 	SDL_DestroyTexture(plot->texture_x);
 	SDL_DestroyTexture(plot->texture_y);
-	SDL_FreeSurface   (plot->plot_mask_surface);
-	SDL_FreeSurface   (plot->plot_surface);
-	SDL_FreeSurface   (plot->caption_mask_surface);
-	SDL_FreeSurface   (plot->caption_surface);
-	SDL_FreeSurface   (plot->caption_x);
-	SDL_FreeSurface   (plot->caption_y);
+	SDL_FreeSurface (plot->plot_mask_surface);
+	SDL_FreeSurface (plot->plot_surface);
+	SDL_FreeSurface (plot->caption_mask_surface);
+	SDL_FreeSurface (plot->caption_surface);
+	SDL_FreeSurface (plot->caption_x);
+	SDL_FreeSurface (plot->caption_y);
 
-	params->caption_list    = clear_caption(params->caption_list);
+	params->caption_list = clear_caption(params->caption_list);
 	params->coordinate_list = clear_coord(params->coordinate_list);
 
 	*surface_list = clear_surface(*surface_list);
@@ -150,8 +149,10 @@ void draw_plot(plot_struct *plot, const plot_params *params, surface_list *surfa
 		                      plot->font,
 		                      font_color,
 		                      surface_list,
-		                      plot_position.x,
-		                      plot_position.y);
+		                      point_2d {
+		                      	static_cast<float>(plot_position.x),
+		                      	static_cast<float>(plot_position.y)
+		                      });
 
 		if (params->caption_list != nullptr) {
 			if (const caption_item *tmp = params->caption_list; tmp != nullptr) {
@@ -215,11 +216,9 @@ void draw_plot(plot_struct *plot, const plot_params *params, surface_list *surfa
 		}
 
 		SDL_RenderPresent(plot->renderer);
-
 		wait_for_sdl_event();
-	}
-	else {
-		std::cerr << stderr << "Error cant allocate memory for screen : %s\n" << SDL_GetError() << std::endl;
+	} else {
+		std::cerr << stderr << "Error cant allocate memory for screen : \n" << SDL_GetError() << std::endl;
 	}
 }
 
@@ -243,8 +242,8 @@ void draw_points(
 
 	while (tmp != nullptr) {
 		if (tmp->caption_id == caption_item->caption_id) {
-			const int circle_x1 = plot_mask_position.x + 1 + tmp->x / params->scale_x * scale_x_num;
-			const int circle_y1 = plot_mask_position.y + plot_height - tmp->y / params->scale_y * scale_y_num;
+			const int circle_x1 = plot_mask_position.x + 1 + tmp->p.x / params->scale_x * scale_x_num;
+			const int circle_y1 = plot_mask_position.y + plot_height - tmp->p.y / params->scale_y * scale_y_num;
 
 			SDL_SetRenderDrawColor(renderer,0,0,0,255);
 
@@ -279,8 +278,7 @@ void draw_scale_graduation(SDL_Renderer * renderer,
 						   TTF_Font *font,
                            const SDL_Color font_color,
                            surface_list *surface_list,
-                           const int plot_position_x,
-                           const int plot_position_y
+                           const point_2d plot_position
 ) {
 	const int scale_x_num = plot_width / (params->max_x / params->scale_x);
 	const int scale_y_num = plot_height / (params->max_y / params->scale_y);
@@ -295,13 +293,12 @@ void draw_scale_graduation(SDL_Renderer * renderer,
 	int regular_caption_text_height = 0;
 	int regular_caption_text_width = 0;
 
-	for (auto i = 0; i< point_number_x + 1; ++i) {
-
+	for (auto i = 0; i < point_number_x + 1; ++i) {
 		SDL_SetRenderDrawColor(renderer,0,0,0,255);
 		SDL_RenderDrawLine(renderer,init_pos_x,init_pos_y,init_pos_x,init_pos_y - graduation_height);
 
 		char text[10];
-		sprintf(text,"%d",current_scale);
+		sprintf_s(text,"%d",current_scale);
 
 		SDL_Surface *caption_text_surface = TTF_RenderText_Blended(font, text, font_color);
 		SDL_Rect caption_text;
@@ -324,12 +321,11 @@ void draw_scale_graduation(SDL_Renderer * renderer,
 	init_pos_y = plot_mask_position.y + plot_height + 2;
 
 	for (auto i = 0; i < params->max_y / params->scale_y + 1; ++i) {
-
 		SDL_SetRenderDrawColor(renderer,0,0,0,255);
 		SDL_RenderDrawLine(renderer,init_pos_x,init_pos_y,init_pos_x+graduation_height,init_pos_y);
 
 		char text[10];
-		sprintf(text,"%d",current_scale);
+		sprintf_s(text,"%d", current_scale);
 
 		SDL_Surface *caption_text_surface = TTF_RenderText_Blended(font, text, font_color);
 		SDL_Rect caption_text;
@@ -354,7 +350,7 @@ void draw_scale_graduation(SDL_Renderer * renderer,
 	text_caption_y.y = plot_mask_position.y + plot_height / 2 + text_caption_y.w / 4;
 
 	// rotate caption y
-	const SDL_Point caption_center= { plot_position_x - caption_y_label_offset,0 };
+	const SDL_Point caption_center= { static_cast<int>(plot_position.x) - caption_y_label_offset,0 };
 	SDL_RenderCopyEx(plot->renderer, plot->texture_y, nullptr, &text_caption_y, -90, &caption_center, SDL_FLIP_NONE);
 
 	//caption x
@@ -362,7 +358,7 @@ void draw_scale_graduation(SDL_Renderer * renderer,
 	plot->texture_x = SDL_CreateTextureFromSurface(plot->renderer, plot->caption_x);
 	SDL_QueryTexture(plot->texture_x, nullptr, nullptr, &text_caption_x.w, &text_caption_x.h);
 	text_caption_x.x = params->screen_width / 2 - text_caption_x.w / 2;
-	text_caption_x.y = plot_position_y + plot_height + regular_caption_text_height;
+	text_caption_x.y = plot_position.y + plot_height + regular_caption_text_height;
 	SDL_RenderCopy(plot->renderer, plot->texture_x, nullptr, &text_caption_x);
 }
 
@@ -388,29 +384,19 @@ void draw_circle(SDL_Renderer *renderer, const int n_cx, const int n_cy, const i
 		SDL_RenderDrawPoint(renderer, static_cast<int>(cx + x), static_cast<int>(cy + y));
 		SDL_RenderDrawPoint(renderer, static_cast<int>(cx + y), static_cast<int>(cy + x));
  
-		if (x != 0) {
+		if (x != 0.) {
 			SDL_RenderDrawPoint(renderer, static_cast<int>(cx - x), static_cast<int>(cy + y));
 			SDL_RenderDrawPoint(renderer, static_cast<int>(cx + y), static_cast<int>(cy - x));
 		}
  
-		if (y != 0) {
+		if (y != 0.) {
 			SDL_RenderDrawPoint(renderer, static_cast<int>(cx + x), static_cast<int>(cy - y));
 			SDL_RenderDrawPoint(renderer, static_cast<int>(cx - y), static_cast<int>(cy + x));
 		}
  
-		if (x != 0 && y != 0) {
+		if (x != 0. && y != 0.) {
 			SDL_RenderDrawPoint(renderer, static_cast<int>(cx - x), static_cast<int>(cy - y));
 			SDL_RenderDrawPoint(renderer, static_cast<int>(cx - y), static_cast<int>(cy - x));
-		}
- 
-		error += y;
-		++y;
-		error += y;
- 
-		if (error >= 0) {
-			--x;
-			error -= x;
-			error -= x;
 		}
 	}
 }
@@ -420,7 +406,7 @@ void fill_circle(SDL_Renderer *renderer, const int cx, const int cy, const int r
 	const auto r = static_cast<double>(radius);
 
 	for (double dy = 1; dy <= r; dy += 1.0) {
-		const double dx = floor(sqrt(2.0 * r * dy - (dy * dy)));
+		const double dx = floor(sqrt(2.0 * r * dy - dy * dy));
 
 		for (int x = cx - dx; x <= cx + dx; x++) {
 			SDL_RenderDrawPoint(renderer, x,static_cast<int>(cy + r - dy));
