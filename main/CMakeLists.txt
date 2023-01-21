@@ -19,8 +19,6 @@ find_library(SDL_TTF_LIBRARY NAME SDL_TTF)
 add_executable(${MAIN_TARGET_NAME} "main.cpp" "main.h"
     ${srcPath}plot_graph.cpp ${incPath}plot_graph.h
     ${srcPath}linked_list.cpp ${incPath}linked_list.h
-    #${srcPath}AbstractWindow.cpp ${incPath}AbstractWindow.h 
-    #${srcPath}Utils.cpp ${incPath}Utils.h
 )
 
 target_include_directories(${MAIN_TARGET_NAME} PRIVATE ${srcPath} ${incPath} 
