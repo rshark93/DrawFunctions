@@ -25,7 +25,7 @@ int main(const int argc, char* argv[])
 
 	auto max_y = 0.f;
 
-	for (auto x = x_start_value; x < x_end_value; x += 0.2) {
+	for (auto x = x_start_value; x < x_end_value; x += 0.2f) {
 		auto y = static_cast<float>(pow(10, tan(x))); // 10^tg(x)
 		const auto y_1 = static_cast<float>(pow(10, sin(x))); // 10^sin(x)
 

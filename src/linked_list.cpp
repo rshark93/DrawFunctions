@@ -75,7 +75,7 @@ coord_list push_back_coord(const coord_list list, const int caption_id, const po
 	if (list == nullptr)
 		return coord_new_item;
 
-	coordinate_item* temp=list;
+	coordinate_item* temp = list;
 	while(temp->nxt != nullptr) {
 		temp = temp->nxt;
 	}
