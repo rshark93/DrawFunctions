@@ -3,7 +3,7 @@
 #include <iostream>
 
 caption_list clear_caption(caption_list list) {
-	if (list!= nullptr) {
+	if (list != nullptr) {
 		caption_item * current = list;
 
 		while (current != nullptr) {	
@@ -39,19 +39,17 @@ caption_list push_back_caption(const caption_list list, char * caption_txt, cons
 }
 
 void print_list_caption(const caption_list list) {
-	if (const caption_item *tmp = list; tmp != nullptr)
-	{
+	if (const caption_item *tmp = list; tmp != nullptr) {
 		while(tmp != nullptr) {
-			printf("%s => %d;", tmp->caption_txt, tmp->caption_id);
+			std::cout << tmp->caption_txt << " " << tmp->caption_id;
 			tmp = tmp->nxt;
 		}
-		printf("\n");
-	}
 
+		std::cout << "\n";
+	}
 }
 
 coord_list clear_coord(coord_list list) {
-
 	if (list != nullptr) {
 		coordinate_item * current = list;
 
@@ -67,14 +65,14 @@ coord_list clear_coord(coord_list list) {
 	return list;
 }
 
-coord_list push_back_coord(const coord_list list, const int caption_id, const float x, const float y) {
+coord_list push_back_coord(const coord_list list, const int caption_id, const point_2d p) {
 	const auto coord_new_item = new coordinate_item[sizeof(coordinate_item)];
-	coord_new_item->x = x;
-	coord_new_item->y = y;
+	coord_new_item->p.x = p.x;
+	coord_new_item->p.y = p.y;
 	coord_new_item->caption_id = caption_id;
 	coord_new_item->nxt = nullptr;
 
-	if(list == nullptr)
+	if (list == nullptr)
 		return coord_new_item;
 
 	coordinate_item* temp=list;
@@ -89,17 +87,15 @@ coord_list push_back_coord(const coord_list list, const int caption_id, const fl
 void print_list_coord(const coord_list list) {
 	if (const coordinate_item *tmp = list; tmp != nullptr) {
 		while(tmp != nullptr) {
-			printf("(%f,%f) ", tmp->x,tmp->y);
+			std::cout <<tmp->p.x << " " << tmp->p.y;
 			tmp = tmp->nxt;
 		}
 
-		printf("\n");
+		std::cout << "\n";
 	}
-
 }
 
 surface_list clear_surface(surface_list list) {
-
 	if (list != nullptr) {
 		surface_item * current = list;
 

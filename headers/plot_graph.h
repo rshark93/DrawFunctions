@@ -4,7 +4,7 @@
 #include "linked_list.h"
 
 enum {
-	dot_radius = 6,
+	dot_radius = 4,
 	caption_offset_circle_to_text = 10,
 	caption_offset_delimiter = 40,
 	graduation_height = 10,
@@ -45,7 +45,7 @@ typedef struct plot_struct {
 int plot_graph(plot_params *params);
 
 void draw_scale_graduation(SDL_Renderer * renderer, const plot_params *params, plot_struct *plot, float plot_width, float plot_height,
-	SDL_Rect plot_mask_position, TTF_Font *font, SDL_Color font_color, surface_list *surface_list, int plot_position_x, int plot_position_y);
+	SDL_Rect plot_mask_position, TTF_Font *font, SDL_Color font_color, surface_list *surface_list, point_2d plot_position);
 
 void draw_points(SDL_Renderer* renderer, const caption_item* caption_item, const plot_params *params, float plot_width, float plot_height,
 	SDL_Rect plot_mask_position);
