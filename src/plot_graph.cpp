@@ -2,6 +2,19 @@
 #include <cmath>
 #include <iostream>
 
+struct rect {
+	SDL_Rect sdl_rect{};
+
+	rect(const int x, const int y, const int width, const int height) {
+		sdl_rect.x = x;
+		sdl_rect.y = y;
+		sdl_rect.w = width;
+		sdl_rect.h = height;
+	}
+
+	~rect() = default;
+};
+
 int plot_graph(plot_params *params) {
 	setvbuf(stdout, nullptr, _IONBF, 0);
 
@@ -91,67 +104,63 @@ void draw_plot(plot_struct *plot, const plot_params *params, surface_list *surfa
 
 		//------------ background-----------------------
 		SDL_SetRenderDrawColor(plot->renderer,255,255,255,255);
-		SDL_Rect screen;
-		screen.x = 0;
-		screen.y = 0;
-		screen.w = params->screen_width;
-		screen.h = params->screen_height;
+		const auto screen = rect(0, 0, params->screen_width, params->screen_height);
 
-		SDL_RenderFillRect( plot->renderer, &screen );
+		SDL_RenderFillRect( plot->renderer, &screen.sdl_rect );
 		//---------------------------------------------
 
 		const float plot_width = params->screen_width * 0.8;
 		const float plot_height = params->screen_height * 0.8;
 		const float plot_caption_height = params->screen_height * 0.05;
 
-		SDL_Rect plot_position;
-		plot_position.x = params->screen_width / 2 - plot_width * 0.47;
-		plot_position.y = params->screen_height * 0.50 - plot_height / 2;
-		plot_position.w = plot_width;
-		plot_position.h = plot_height;
+		const auto plot_position = rect(
+			params->screen_width / 2 - plot_width * 0.47,
+			params->screen_height * 0.50 - plot_height / 2, 
+			plot_width,
+			plot_height);
 
-		SDL_Rect plot_mask_position;
-		plot_mask_position.x = plot_position.x - stroke_width;
-		plot_mask_position.y = plot_position.y - stroke_width;
-		plot_mask_position.w = plot_width + stroke_width * 2;
-		plot_mask_position.h = plot_height + stroke_width * 2;
+		const auto plot_mask_position = rect(
+			plot_position.sdl_rect.x - stroke_width, 
+			plot_position.sdl_rect.y - stroke_width,
+			plot_width + stroke_width * 2,
+			plot_height + stroke_width * 2);
 
-		SDL_Rect plot_caption_position;
-		plot_caption_position.x = plot_position.x;
-		plot_caption_position.y = plot_position.y - 20 - plot_caption_height;
-		plot_caption_position.w = plot_width;
-		plot_caption_position.h = plot_caption_height;
+		const auto plot_caption_position = rect(
+			plot_position.sdl_rect.x,
+			plot_position.sdl_rect.y - 20 - plot_caption_height,
+			plot_width,
+			plot_caption_height);
 
-		SDL_Rect plot_caption_mask_position;
-		plot_caption_mask_position.x = plot_caption_position.x - stroke_width;
-		plot_caption_mask_position.y = plot_caption_position.y - stroke_width;
-		plot_caption_mask_position.w = plot_width + stroke_width * 2;
-		plot_caption_mask_position.h = plot_caption_height + stroke_width * 2;
-
-		SDL_SetRenderDrawColor(plot->renderer,0, 0, 0,255);
-		SDL_RenderFillRect(plot->renderer, &plot_mask_position);
-
-		SDL_SetRenderDrawColor(plot->renderer,255, 255, 255,255);
-		SDL_RenderFillRect(plot->renderer, &plot_position);
+		const auto plot_caption_mask_position = rect(
+			plot_caption_position.sdl_rect.x - stroke_width,
+			plot_caption_position.sdl_rect.y - stroke_width,
+			plot_width + stroke_width * 2,
+			plot_caption_height + stroke_width * 2);
 
 		SDL_SetRenderDrawColor(plot->renderer,0, 0, 0,255);
-		SDL_RenderFillRect(plot->renderer, &plot_caption_mask_position);
+		SDL_RenderFillRect(plot->renderer, &plot_mask_position.sdl_rect);
 
 		SDL_SetRenderDrawColor(plot->renderer,255, 255, 255,255);
-		SDL_RenderFillRect(plot->renderer, &plot_caption_position);
+		SDL_RenderFillRect(plot->renderer, &plot_position.sdl_rect);
+
+		SDL_SetRenderDrawColor(plot->renderer,0, 0, 0,255);
+		SDL_RenderFillRect(plot->renderer, &plot_caption_mask_position.sdl_rect);
+
+		SDL_SetRenderDrawColor(plot->renderer,255, 255, 255,255);
+		SDL_RenderFillRect(plot->renderer, &plot_caption_position.sdl_rect);
 
 		draw_scale_graduation(plot->renderer,
 		                      params,
 		                      plot,
 		                      plot_width,
 		                      plot_height,
-		                      plot_mask_position,
+		                      plot_mask_position.sdl_rect,
 		                      plot->font,
 		                      font_color,
 		                      surface_list,
 		                      point_2d {
-		                      	static_cast<float>(plot_position.x),
-		                      	static_cast<float>(plot_position.y)
+		                      	static_cast<float>(plot_position.sdl_rect.x),
+		                      	static_cast<float>(plot_position.sdl_rect.y)
 		                      });
 
 		if (params->caption_list != nullptr) {
@@ -160,8 +169,8 @@ void draw_plot(plot_struct *plot, const plot_params *params, surface_list *surfa
 
 				while (tmp != nullptr) {
 					//plot circle1
-					const int circle_x1 = plot_caption_mask_position.x + caption_offset;
-					const int circle_y1 = plot_caption_mask_position.y + plot_caption_height / 2 + stroke_width;
+					const int circle_x1 = plot_caption_mask_position.sdl_rect.x + caption_offset;
+					const int circle_y1 = plot_caption_mask_position.sdl_rect.y + plot_caption_height / 2 + stroke_width;
 
 					SDL_SetRenderDrawColor(plot->renderer,0,0,0,255);
 					fill_circle(plot->renderer,circle_x1,circle_y1,dot_radius);
@@ -175,7 +184,7 @@ void draw_plot(plot_struct *plot, const plot_params *params, surface_list *surfa
 					//plot circle2
 					caption_offset += 40;
 
-					const int circle_x2 = plot_caption_mask_position.x + caption_offset;
+					const int circle_x2 = plot_caption_mask_position.sdl_rect.x + caption_offset;
 					const int circle_y2 = circle_y1;
 
 					SDL_SetRenderDrawColor(plot->renderer,0,0,0,255);
@@ -208,7 +217,7 @@ void draw_plot(plot_struct *plot, const plot_params *params, surface_list *surfa
 						params,
 						plot_width,
 						plot_height,
-						plot_mask_position);
+						plot_mask_position.sdl_rect);
 
 					tmp = tmp->nxt;
 				}
@@ -375,8 +384,8 @@ void wait_for_sdl_event() {
 void draw_circle(SDL_Renderer *renderer, const int n_cx, const int n_cy, const int radius)
 {
 	auto error = static_cast<double>(-radius);
-	double x = static_cast<double>(radius) - 0.5;
-	auto y = 0.5;
+	const double x = static_cast<double>(radius) - 0.5;
+	constexpr auto y = 0.5;
 	const double cx = n_cx - 0.5;
 	const double cy = n_cy - 0.5;
  
@@ -389,7 +398,7 @@ void draw_circle(SDL_Renderer *renderer, const int n_cx, const int n_cy, const i
 			SDL_RenderDrawPoint(renderer, static_cast<int>(cx + y), static_cast<int>(cy - x));
 		}
  
-		if (y != 0.) {
+		if constexpr (y != 0.) {
 			SDL_RenderDrawPoint(renderer, static_cast<int>(cx + x), static_cast<int>(cy - y));
 			SDL_RenderDrawPoint(renderer, static_cast<int>(cx - y), static_cast<int>(cy + x));
 		}
