@@ -1,7 +1,17 @@
 #include "main.h"
 
 #include <iostream>
-#include "plot_graph.h"
+#include "calculate_function.h"
+
+// 10^tg(x)
+float math_fun_0(float x) {
+	return static_cast<float>(pow(10, tan(x)));
+}
+
+// 10^sin(x)
+float math_fun_1(float x) {
+	return static_cast<float>(pow(10, sin(x)));
+}
 
 int main(const int argc, char* argv[])
 {
@@ -11,52 +21,13 @@ int main(const int argc, char* argv[])
 		argv[1] = const_cast<char*>(default_font_path);
 	}
 
-	//populate caption list
-	caption_list caption_list = nullptr;
+	const auto calculate_obj = std::make_unique<calculate_function>();
 
-	caption_list = push_back_caption(caption_list, "10^tg(x)", 0, 0x000FF);
-	caption_list = push_back_caption(caption_list, "10^sin(x)", 1, 0xFF00FF);
+	calculate_obj->init_plot_setting(680, 680, "Draw Functions", argv[1], 18, "X", "Y",
+		1, 5, 10.f, 60.f);
 
-	//populate coordinate list
-	coord_list coordinate_list = nullptr;
+	calculate_obj->calculate(0, "10^tg(x)", 0x000FF, 0.f, 10.f, math_fun_0);
+	calculate_obj->calculate(1, "10^sin(x)", 0xFF00FF, 0.f, 10.f, math_fun_1);
 
-	constexpr auto x_start_value = 0.f;
-	constexpr auto x_end_value = 10.f;
-
-	auto max_y = 0.f;
-
-	for (auto x = x_start_value; x < x_end_value; x += 0.2f) {
-		auto y = static_cast<float>(pow(10, tan(x))); // 10^tg(x)
-		const auto y_1 = static_cast<float>(pow(10, sin(x))); // 10^sin(x)
-
-		if (y > 60.f) y = 60.;
-		if (y > max_y) max_y = y;
-
-		coordinate_list = push_back_coord(coordinate_list, 0, point_2d{ x, y });
-		coordinate_list = push_back_coord(coordinate_list, 1, point_2d{ x, y_1 });
-	}
-
-	//populate plot parameter object
-	plot_params params;
-
-	params.screen_height = 680;
-	params.screen_width = 680;
-	params.plot_window_title = "Draw Functions";
-	params.font_text_path = argv[1];
-	params.font_text_size = 18;
-	params.caption_text_x = "X";
-	params.caption_text_y = "Y";
-	params.caption_list = caption_list;
-	params.coordinate_list = coordinate_list;
-	params.scale_x = 1;
-	params.scale_y = 5;
-	params.max_x = x_end_value;
-	params.max_y = max_y;
-
-	if (const int ret = plot_graph(&params); ret == EXIT_FAILURE) {
-		std::cout << "plot_graph return with status %d\n" << ret << std::endl;
-		return EXIT_FAILURE;
-	}
-
-	return EXIT_SUCCESS;
+	return calculate_obj->plot_graphics();
 }

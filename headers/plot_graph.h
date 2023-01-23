@@ -12,7 +12,7 @@ enum {
 	caption_margin = 30
 };
 
-typedef struct plot_params_struct {
+typedef struct plot_settings_struct {
 	int screen_width;
 	int screen_height;
 	char *plot_window_title;
@@ -21,12 +21,12 @@ typedef struct plot_params_struct {
 	char *caption_text_x;
 	char *caption_text_y;
 	caption_list caption_list;
-	coord_list coordinate_list;
+	mutable coord_list coordinate_list;
 	double scale_x;
 	double scale_y;
 	double max_x;
 	double max_y;
-} plot_params;
+} plot_settings;
 
 typedef struct plot_struct {
 	TTF_Font *font;
@@ -42,19 +42,19 @@ typedef struct plot_struct {
 	SDL_Renderer *renderer;
 } plot_struct;
 
-int plot_graph(plot_params *params);
+int plot_graph(plot_settings *params);
 
-void draw_scale_graduation(SDL_Renderer * renderer, const plot_params *params, plot_struct *plot, float plot_width, float plot_height,
+void draw_scale_graduation(SDL_Renderer * renderer, const plot_settings *params, plot_struct *plot, float plot_width, float plot_height,
 	SDL_Rect plot_mask_position, TTF_Font *font, SDL_Color font_color, surface_list *surface_list, point_2d plot_position);
 
-void draw_points(SDL_Renderer* renderer, const caption_item* caption_item, const plot_params *params, float plot_width, float plot_height,
+void draw_points(SDL_Renderer* renderer, const caption_item* caption_item, const plot_settings *params, float plot_width, float plot_height,
 	SDL_Rect plot_mask_position);
 
-void draw_plot(plot_struct *plot, const plot_params *params, surface_list *surface_list);
+void draw_plot(plot_struct *plot, const plot_settings *params, surface_list *surface_list);
 
 void wait_for_sdl_event();
 
-void clean_plot(const plot_struct *plot, plot_params *params, surface_list *surface_list);
+void clean_plot(const plot_struct *plot, plot_settings *params, surface_list *surface_list);
 
 void draw_circle(SDL_Renderer *renderer, int n_cx, int n_cy, int radius);
 

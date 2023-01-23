@@ -15,7 +15,7 @@ struct rect {
 	~rect() = default;
 };
 
-int plot_graph(plot_params *params) {
+int plot_graph(plot_settings *params) {
 	setvbuf(stdout, nullptr, _IONBF, 0);
 
 	surface_list surface_list = nullptr;
@@ -67,7 +67,7 @@ int plot_graph(plot_params *params) {
 	return EXIT_SUCCESS;
 }		
 
-void clean_plot(const plot_struct *plot, plot_params *params, surface_list *surface_list)
+void clean_plot(const plot_struct *plot, plot_settings *params, surface_list *surface_list)
 {
 	SDL_DestroyTexture(plot->texture_x);
 	SDL_DestroyTexture(plot->texture_y);
@@ -91,12 +91,12 @@ void clean_plot(const plot_struct *plot, plot_params *params, surface_list *surf
 	TTF_Quit();
 }
 
-void draw_plot(plot_struct *plot, const plot_params *params, surface_list *surface_list)
+void draw_plot(plot_struct *plot, const plot_settings *params, surface_list *surface_list)
 {
 	plot->renderer = SDL_CreateRenderer(plot->screen, 0, 0);
 
 	if (plot->screen != nullptr) {
-		constexpr int stroke_width=2;
+		constexpr int stroke_width = 2;
 		constexpr SDL_Color font_color = {0, 0, 0};
 
 		plot->caption_x = TTF_RenderText_Blended(plot->font, params->caption_text_x, font_color);
@@ -109,9 +109,9 @@ void draw_plot(plot_struct *plot, const plot_params *params, surface_list *surfa
 		SDL_RenderFillRect( plot->renderer, &screen.sdl_rect );
 		//---------------------------------------------
 
-		const float plot_width = params->screen_width * 0.8;
-		const float plot_height = params->screen_height * 0.8;
-		const float plot_caption_height = params->screen_height * 0.05;
+		const float plot_width = static_cast<float>(params->screen_width) * 0.8f;
+		const float plot_height = static_cast<float>(params->screen_height) * 0.8f;
+		const float plot_caption_height = static_cast<float>(params->screen_height) * 0.05f;
 
 		const auto plot_position = rect(
 			params->screen_width / 2 - plot_width * 0.47,
@@ -234,7 +234,7 @@ void draw_plot(plot_struct *plot, const plot_params *params, surface_list *surfa
 void draw_points(
 	SDL_Renderer *renderer,
 	const caption_item *caption_item,
-	const plot_params *params,
+	const plot_settings *params,
 	const float plot_width,
 	const float plot_height,
 	const SDL_Rect plot_mask_position)
@@ -279,7 +279,7 @@ void draw_points(
 }
 
 void draw_scale_graduation(SDL_Renderer * renderer,
-						   const plot_params *params,
+						   const plot_settings *params,
                            plot_struct *plot,
                            const float plot_width,
                            const float plot_height,
@@ -295,7 +295,7 @@ void draw_scale_graduation(SDL_Renderer * renderer,
 	int init_pos_x = plot_mask_position.x + 1;
 	int init_pos_y = plot_mask_position.y + plot_height + 1;
 
-	int current_scale = 0;
+	auto current_scale = 0;
 
 	const int point_number_x = params->max_x / params->scale_x;
 
@@ -327,7 +327,7 @@ void draw_scale_graduation(SDL_Renderer * renderer,
 
 	current_scale = 0;
 	init_pos_x = plot_mask_position.x + 1;
-	init_pos_y = plot_mask_position.y + plot_height + 2;
+	init_pos_y = plot_mask_position.y + plot_height;
 
 	for (auto i = 0; i < params->max_y / params->scale_y + 1; ++i) {
 		SDL_SetRenderDrawColor(renderer,0,0,0,255);
@@ -356,7 +356,7 @@ void draw_scale_graduation(SDL_Renderer * renderer,
 	plot->texture_y = SDL_CreateTextureFromSurface(plot->renderer, plot->caption_y);
 	SDL_QueryTexture( plot->texture_y, nullptr, nullptr, &text_caption_y.w, &text_caption_y.h);
 	text_caption_y.x = -1 * regular_caption_text_width;
-	text_caption_y.y = plot_mask_position.y + plot_height / 2 + text_caption_y.w / 4;
+	text_caption_y.y = plot_mask_position.y + plot_height / 2 + text_caption_y.w / 4.;
 
 	// rotate caption y
 	const SDL_Point caption_center= { static_cast<int>(plot_position.x) - caption_y_label_offset,0 };
