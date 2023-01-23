@@ -66,12 +66,6 @@ void calculate_function::print_result(int graph_id, std::string graph_name) cons
 		points.push_back(x_next->p);
 	}
 
-
-	/// <summary>
-	/// TODO id's and print each graph
-	/// </summary>
-	/// <param name="graph_id"></param>
-
 	auto total_plots = points.size() / graph_max_points;
 
 	std::cout << "\n" << std::setw(20) << "PLOT: " << graph_name << std::endl;
