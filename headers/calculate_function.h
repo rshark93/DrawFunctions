@@ -16,6 +16,8 @@ public:
 	void calculate(int id, char* caption_text, int color,
 	               float x_start_value, float x_end_value, float (*math_func)(float)) const;
 
+	void print_result(int graph_id) const;
+
 	[[nodiscard]] int plot_graphics() const;
 
 	calculate_function();

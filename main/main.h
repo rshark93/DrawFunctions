@@ -3,5 +3,6 @@
 #ifdef _WIN32
 #undef main
 #endif
+#include <string>
 
-inline auto default_font_path = "../../fonts/Philosopher.ttf";
+inline std::string default_font_path = "../../fonts/Philosopher.ttf";
