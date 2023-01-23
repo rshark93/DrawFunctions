@@ -1,6 +1,7 @@
 #include "calculate_function.h"
 
-#include <iostream>
+#include <iomanip>
+#include <vector>
 
 void calculate_function::init_plot_setting() const {
 	plot_settings_->screen_height = 680;
@@ -46,6 +47,41 @@ void calculate_function::calculate(const int id, char* caption_text, const int c
 		//if (y > max_y_) max_y_ = y;
 
 		plot_settings_->coordinate_list = push_back_coord(plot_settings_->coordinate_list, id, point_2d{ x, y });
+	}
+}
+
+void calculate_function::print_result(int graph_id) const {
+	std::vector<point_2d> points;
+
+	const auto x = plot_settings_->coordinate_list;
+	points.push_back(x->p);
+
+	auto x_next = x->nxt;
+	points.push_back(x_next->p);
+
+	while (true) {
+		x_next = x_next->nxt;
+
+		if (x_next == nullptr)
+			break;
+
+		points.push_back(x_next->p);
+	}
+
+
+	/// <summary>
+	/// TODO id's and print each graph
+	/// </summary>
+	/// <param name="graph_id"></param>
+
+	std::cout << std::setw(5) <<" " << "  ";
+	std::cout << std::setw(5) << "X:";
+	std::cout << std::setw(20) << "Y:" << std::endl;
+
+	for (auto i = 0; i < points.size() - 1; ++i) {
+		std::cout << std::setw(5) << i + 1 << ". ";
+		std::cout << std::setw(5) << points[i].x;
+		std::cout << std::setw(20) << points[i].y << std::endl;
 	}
 }
 
