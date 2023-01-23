@@ -21,13 +21,20 @@ int main(const int argc, char* argv[]) {
 
 	const auto calculate_obj = std::make_unique<calculate_function>();
 
+	constexpr auto x_end = 6.f;
+	constexpr auto max_y = 60.f;
+
+	constexpr char* first_fun_name = "10^tg(x)";
+	constexpr char* second_fun_name = "10^sin(x)";
+
 	calculate_obj->init_plot_setting(680, 680, "Draw Functions", argv[1], 18, "X", "Y",
-		1, 5, 10.f, 60.f);
+		1, 5, x_end, max_y);
 
-	calculate_obj->calculate(0, "10^tg(x)", 0x000FF, 0.f, 10.f, math_fun_0);
-	calculate_obj->calculate(1, "10^sin(x)", 0xFF00FF, 0.f, 10.f, math_fun_1);
+	calculate_obj->calculate(0, first_fun_name, 0x000FF, 0.f, x_end, math_fun_0);
+	calculate_obj->calculate(1, second_fun_name, 0xFF00FF, 0.f, x_end, math_fun_1);
 
-	calculate_obj->print_result(1);
+	calculate_obj->print_result(0, first_fun_name);
+	calculate_obj->print_result(1, second_fun_name);
 
 	return calculate_obj->plot_graphics();
 }

@@ -6,6 +6,7 @@
 class calculate_function {
 
 public:
+	int graph_max_points = 21;
 
 	void init_plot_setting() const;
 
@@ -16,7 +17,7 @@ public:
 	void calculate(int id, char* caption_text, int color,
 	               float x_start_value, float x_end_value, float (*math_func)(float)) const;
 
-	void print_result(int graph_id) const;
+	void print_result(int graph_id, std::string graph_name) const;
 
 	[[nodiscard]] int plot_graphics() const;
 
@@ -32,5 +33,4 @@ private:
 
 	double x_start_value_ = 0.;
 	double x_end_value_ = 10.;
-	double max_y_ = 0.;
 };
