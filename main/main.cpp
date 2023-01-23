@@ -13,10 +13,8 @@ float math_fun_1(float x) {
 	return static_cast<float>(pow(10, sin(x)));
 }
 
-int main(const int argc, char* argv[])
-{
-	if (argc != 2)
-	{
+int main(const int argc, char* argv[]) {
+	if (argc != 2) {
 		std::cout << "usage: " << argv[0] << " font file name(.ttf)\n" << std::endl;
 		argv[1] = const_cast<char*>(default_font_path);
 	}
