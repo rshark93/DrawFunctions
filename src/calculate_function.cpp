@@ -14,7 +14,7 @@ void calculate_function::init_plot_setting() const {
 	plot_settings_->scale_x = 1;
 	plot_settings_->scale_y = 5;
 	plot_settings_->max_x = x_end_value_;
-	plot_settings_->max_y = max_y_;
+	plot_settings_->max_y = 100.f;
 }
 
 void calculate_function::init_plot_setting(const int width, const int height, char* plot_window_title,
@@ -37,20 +37,18 @@ void calculate_function::calculate(const int id, char* caption_text, const int c
                                    const float x_end_value, float(* math_func)(float)) const {
 	plot_settings_->caption_list = push_back_caption(plot_settings_->caption_list, caption_text, id, color);
 
-	// TODO
-	auto step = 21;
+	const auto step = (abs(x_start_value) + abs(x_end_value)) / graph_max_points;
 
-	for (auto x = x_start_value; x < x_end_value; x += 0.2f) {
+	for (auto x = x_start_value; x < x_end_value; x += step) {
 		auto y = math_func(x);
 
-		if (y > 60.f) y = 60.;
-		//if (y > max_y_) max_y_ = y;
+		if (y > plot_settings_->max_y) y = plot_settings_->max_y;
 
 		plot_settings_->coordinate_list = push_back_coord(plot_settings_->coordinate_list, id, point_2d{ x, y });
 	}
 }
 
-void calculate_function::print_result(int graph_id) const {
+void calculate_function::print_result(int graph_id, std::string graph_name) const {
 	std::vector<point_2d> points;
 
 	const auto x = plot_settings_->coordinate_list;
@@ -74,13 +72,20 @@ void calculate_function::print_result(int graph_id) const {
 	/// </summary>
 	/// <param name="graph_id"></param>
 
-	std::cout << std::setw(5) <<" " << "  ";
-	std::cout << std::setw(5) << "X:";
+	auto total_plots = points.size() / graph_max_points;
+
+	std::cout << "\n" << std::setw(20) << "PLOT: " << graph_name << std::endl;
+
+	std::cout << std::setw(5) << " " << "  ";
+	std::cout << std::setw(10) << "X:";
 	std::cout << std::setw(20) << "Y:" << std::endl;
 
-	for (auto i = 0; i < points.size() - 1; ++i) {
-		std::cout << std::setw(5) << i + 1 << ". ";
-		std::cout << std::setw(5) << points[i].x;
+	auto s = 0;
+	graph_id > 0 ? s = graph_max_points + 1 : 0;
+
+	for (auto i = s; i < graph_max_points + graph_id * s; ++i) {
+		std::cout << std::setw(5) << i + 1 - graph_id * s << ". ";
+		std::cout << std::setw(10) << points[i].x;
 		std::cout << std::setw(20) << points[i].y << std::endl;
 	}
 }
