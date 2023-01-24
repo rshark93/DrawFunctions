@@ -1,6 +1,7 @@
 # DrawFunctions
 
-Plot Math Functions
+Plot Math Functions using C/C++
 
-![image](https://user-images.githubusercontent.com/45273562/214179472-f2b65438-10a7-4a85-802f-9e0c00132d94.png)
+![image](https://user-images.githubusercontent.com/45273562/214179896-9fff31d2-6c45-476c-9e48-30b72d7ccb3b.png)
+
 
